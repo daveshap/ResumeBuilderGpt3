@@ -16,11 +16,11 @@ def save_file(filepath, content):
 
 def load_info():
     info = open_file('my_info.json')
-    info = json.loads(definitions)
+    info = json.loads(info)
     return info
 
 
-openai.api_key = open_file('openaiapikey.txt')
+openai.api_key = open_file('openaiapikey.txt')  # update this - create the file if needed
 
 
 def gpt3_completion(prompt, engine='text-davinci-002', temp=0.7, top_p=1.0, tokens=1000, freq_pen=0.0, pres_pen=0.0, stop=['asdfasdf', 'asdasdf']):
@@ -52,4 +52,21 @@ def gpt3_completion(prompt, engine='text-davinci-002', temp=0.7, top_p=1.0, toke
 
 
 if __name__ == '__main__':
+    info = load_info()
+    #print(info)
+    text_block = ''
+    for i in info:
+        text_block += '%s: %s\n' % (i['label'], i['answer'])
+    #print(text_block)
+    prompt = open_file('prompt_cover_letter.txt').replace('<<INFO>>', text_block)
+    #print(prompt)
+    completion = gpt3_completion(prompt)
+    print('\n\nCOVER LETTER:', completion)
+    save_file('cover_letter_%s.txt' % time(), completion)
+    ### get professional objective
+    prompt = open_file('prompt_professional_objective.txt').replace('<<INFO>>', text_block)
+    #print(prompt)
+    completion = gpt3_completion(prompt)
+    print('\n\nPROFESSIONAL OBJECTIVE:', completion)
+    save_file('professional_objective_%s.txt' % time(), completion)
     
